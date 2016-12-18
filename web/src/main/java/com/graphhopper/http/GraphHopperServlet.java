@@ -77,6 +77,7 @@ public class GraphHopperServlet extends GHBaseServlet {
         String weighting = getParam(httpReq, "weighting", "fastest");
         String algoStr = getParam(httpReq, "algorithm", "");
         String localeStr = getParam(httpReq, "locale", "en");
+        int carId = getIntParam(httpReq, "carId", -1);
 
         StopWatch sw = new StopWatch().start();
 
@@ -123,7 +124,8 @@ public class GraphHopperServlet extends GHBaseServlet {
                         getHints().
                         put("calcPoints", calcPoints).
                         put("instructions", enableInstructions).
-                        put("wayPointMaxDistance", minPathPrecision);
+                        put("wayPointMaxDistance", minPathPrecision).
+                        put("carId", carId);
 
                 ghRsp = hopper.route(request);
             } catch (IllegalArgumentException ex) {
@@ -149,7 +151,8 @@ public class GraphHopperServlet extends GHBaseServlet {
                     + ", distance0: " + altRsp0.getDistance()
                     + ", time0: " + Math.round(altRsp0.getTime() / 60000f) + "min"
                     + ", points0: " + altRsp0.getPoints().getSize()
-                    + ", debugInfo: " + ghRsp.getDebugInfo());
+                    + ", debugInfo: " + ghRsp.getDebugInfo()
+            		+ ", routeWeight: " + altRsp0.getRouteWeight());
         }
 
         if (writeGPX) {

@@ -95,9 +95,11 @@ public class SimpleRouteSerializer implements RouteSerializer {
                         InstructionList instructions = ar.getInstructions();
                         jsonPath.put("instructions", instructions.createJson());
                     }
-
+                    
                     jsonPath.put("ascend", ar.getAscend());
-                    jsonPath.put("descend", ar.getDescend());
+                    jsonPath.put("descend", ar.getDescend());                    
+                    jsonPath.put("route_weight", ar.getRouteWeight());
+                    
                 }
 
                 jsonPath.put("snapped_waypoints", createPoints(ar.getWaypoints(), pointsEncoded, includeElevation));
