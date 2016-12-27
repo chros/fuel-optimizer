@@ -25,6 +25,8 @@ import com.graphhopper.routing.util.FlagEncoder;
 import com.graphhopper.routing.util.HintsMap;
 import com.graphhopper.util.StopWatch;
 import com.graphhopper.util.shapes.GHPoint;
+import com.graphhopper.util.shapes.GHPoint3D;
+
 import org.json.JSONObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
