@@ -1,11 +1,5 @@
 package com.graphhopper.routing.weighting;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.HashMap;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,6 +7,7 @@ import com.graphhopper.routing.util.FlagEncoder;
 import com.graphhopper.routing.util.HintsMap;
 import com.graphhopper.util.EdgeIteratorState;
 import com.graphhopper.util.PointList;
+import com.graphhopper.util.VehiclesHandler;
 
 public class FuelOptimizerWeighting extends AbstractWeighting {
 
@@ -70,9 +65,8 @@ public class FuelOptimizerWeighting extends AbstractWeighting {
     	double result;
     	
     	int carId = hintsMap.getInt("carId", -1);
-    	carId = 29114;
     	
-    	double k = (reverse) ? fwdDecline : fwdIncline;
+    	double k = ((reverse) ? fwdDecline : fwdIncline) * 1.2;
         if (speed == 0) {
             result = Double.POSITIVE_INFINITY;
         } else if (speed <= 50) {
@@ -80,6 +74,7 @@ public class FuelOptimizerWeighting extends AbstractWeighting {
         } else {
         	result = edgeState.getDistance() / vehiclesHandler.getConsumoExtraurbano(carId) * (1 + k);
         }
+        
         
         
         return result;
@@ -92,119 +87,3 @@ public class FuelOptimizerWeighting extends AbstractWeighting {
 
 }
 
-class VehiclesHandler {
-
-    private final Logger logger = LoggerFactory.getLogger(getClass());	
-    private static VehiclesHandler istanza = null;
-    private HashMap<Integer, Vehicle> veicoli = new HashMap<>(38086);
-
-    
-    private VehiclesHandler() {
-    	try (BufferedReader br = new BufferedReader(new FileReader("vehicles.csv"))) {
-        	String row;
-        	 while ((row = br.readLine()) != null) {
-        		 try {
-        			 Vehicle vehicle = new Vehicle(row);
-        			 veicoli.put(vehicle.getId(), vehicle);
-        		 } catch (Exception e){}
-              }          			
-    	} catch (FileNotFoundException e) {
-    		throw new Error();
-		} catch (IOException e) {
-			throw new Error();
-		}
-       
-    }
-
-    public static synchronized VehiclesHandler getVehiclesHandler() {
-        if (istanza == null) {
-            istanza = new VehiclesHandler();
-        }
-        return istanza;
-    }
-    
-    
-    public double getConsumoUrbano(int id) {
-    	return veicoli.get(id).getConsumoUrbano();
-    }
-    
-    public double getConsumoExtraurbano(int id) {
-    	return veicoli.get(id).getConsumoExtraurbano();
-    	
-    }
-    
-    
-}
-
-class Vehicle {	
-
-	private int id;
-	private String modello;
-	private String cilindrata;
-	private String alimentazione;
-	private String trasmissione;
-	private double consumoUrbano;
-	private double consumoExtraurbano;
-	private String annoDiProduzione;	
-	private String produttore;
-	
-	public Vehicle(String row) throws Exception {
-		String[] tokens = row.split(",");
-		
-		double consumoUrbanoTmp = Double.parseDouble(tokens[6]);
-		double consumoExtraurbanoTmp = Double.parseDouble(tokens[7]);
-		
-		if (0 >= consumoUrbanoTmp || consumoUrbanoTmp >= 200) {
-			throw new Exception();
-		}
-		if (0 >= consumoExtraurbanoTmp || consumoExtraurbanoTmp >= 200) {
-			throw new Exception();
-		}
-			
-		id = Integer.parseInt(tokens[0]);
-		cilindrata = tokens[1];
-		alimentazione = tokens[2];
-		produttore = tokens[3];
-		modello = tokens[4];
-		trasmissione = tokens[5];
-		consumoUrbano = consumoUrbanoTmp * 1609.344 / 3.78541;
-		consumoExtraurbano = consumoExtraurbanoTmp * 1609.344 / 3.78541;
-		annoDiProduzione = tokens[8];
-	}
-	
-	public int getId() {
-		return id;
-	}	
-	public String getProduttore() {
-		return produttore;
-	}
-	public String getModello() {
-		return modello;
-	}
-	public String getCilindrata() {
-		return cilindrata;
-	}
-	public String getAlimentazione() {
-		return alimentazione;
-	}
-	public String getTrasmissione() {
-		return trasmissione;
-	}
-	public double getConsumoUrbano() {
-		return consumoUrbano;
-	}
-	public double getConsumoExtraurbano() {
-		return consumoExtraurbano;
-	}
-	public String getAnnoDiProduzione() {
-		return annoDiProduzione;
-	}
-	
-	@Override
-	public String toString() {
-		return produttore + " " + modello + " - " + annoDiProduzione +
-				" - " + alimentazione + " - " + trasmissione;
-	}
-	
-	
-}

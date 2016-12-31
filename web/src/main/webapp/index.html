@@ -1,164 +1,169 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <meta name="keywords" content="road routing,shortest path,maps,openstreetmap,android,navigation,routenplaner,gis"/>
-        <link type="image/png" rel="icon" href="/favicon.ico"/>
-        <link rel="search" type="application/opensearchdescription+xml" title="GraphHopper Maps" href="opensearch.xml"/>
-        <title>Driving Directions</title>
-        <link rel="stylesheet" href="css/leaflet.css?v=1.0.1" />
-        <link rel="stylesheet" href="css/leaflet.elevation-0.0.4.css" />
-        <link rel="stylesheet" href="css/leaflet_numbered_markers.css" />
-        <link rel="stylesheet" href="css/leaflet.contextmenu.css" />
-        <link rel="stylesheet" href="css/leaflet.loading.css" />
-        <link rel="stylesheet" href="css/ui-lightness/jquery-ui.min.css" />
-        <script type="text/javascript" src="js/main.js"></script>
-        <link rel="stylesheet" type="text/css" href="css/style.css" />
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="keywords" content="road routing,shortest path,maps,openstreetmap,android,navigation,routenplaner,gis"/>
+  <link type="image/png" rel="icon" href="/favicon.ico"/>
+  <link rel="search" type="application/opensearchdescription+xml" title="GraphHopper Maps" href="opensearch.xml"/>
+  <title>Driving Directions</title>
+  <link rel="stylesheet" href="css/leaflet.css?v=1.0.1" />
+  <link rel="stylesheet" href="css/leaflet.elevation-0.0.4.css" />
+  <link rel="stylesheet" href="css/leaflet_numbered_markers.css" />
+  <link rel="stylesheet" href="css/leaflet.contextmenu.css" />
+  <link rel="stylesheet" href="css/leaflet.loading.css" />
+  <link rel="stylesheet" href="css/ui-lightness/jquery-ui.min.css" />
+  <script type="text/javascript" src="js/mymain.js"></script>
+  <link rel="stylesheet" type="text/css" href="css/style.css" />
 
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
-        <style>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+  <style>
 
-        /* Style the list */
-        ul.tab {
-            list-style-type: none;
-            margin: 5px;
-            padding: 0;
-            overflow: hidden;
-            border: 1px solid #ccc;
-            background-color: #f1f1f1;
-        }
+  /* Style the list */
+  ul.tab {
+    list-style-type: none;
+    margin: 5px;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+  }
 
-        /* Float the list items side by side */
-        ul.tab li {float: left;}
+  /* Float the list items side by side */
+  ul.tab li {float: left;}
 
-        /* Style the links inside the list items */
-        ul.tab li a {
-            display: inline-block;
-            color: black;
-            text-align: center;
-            padding: 14px 16px;
-            text-decoration: none;
-            transition: 0.3s;
-            font-size: 15px;
-        }
+  /* Style the links inside the list items */
+  ul.tab li a {
+    display: inline-block;
+    color: black;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    transition: 0.3s;
+    font-size: 15px;
+  }
 
-        /* Change background color of links on hover */
-        ul.tab li a:hover {background-color: #ddd;}
+  /* Change background color of links on hover */
+  ul.tab li a:hover {background-color: #ddd;}
 
-        /* Create an active/current tablink class */
-        ul.tab li a:focus, .active {background-color: #ccc;}
-        </style>
+  /* Create an active/current tablink class */
+  ul.tab li a:focus, .active {background-color: #ccc;}
+  </style>
 
-    </head>
-    <body>
-        <div id="input">
-            <div id="input_header">
+</head>
+<body>
+  <div id="input">
+    <div id="input_header">
 
-                <div id="header_img">
-                    <a class="no_link" href="https://graphhopper.com">
-                        <img alt="GraphHopper" src="./img/header.png"/>
-                    </a>
-                </div>
+      <div id="header_img">
+        <a class="no_link" href="https://graphhopper.com">
+          <img alt="GraphHopper" src="./img/header.png"/>
+        </a>
+      </div>
 
-                <div id="options">
-                    <span id="vehicles" class="hidden">
-
-                    </span>
-                </div>
-                <form id="locationform">
-                    <div id="locationpoints">
-                        <div id="x_pointAdd" class="pointAdd"><img src="./img/point_add.png"/></div>
-                    </div>
-                    <div class="clear"> </div>
-                </form>
-                <select name="carId" class="select2">
-                    <option value="1">Fiat Panda</option>
-                    <option value="2">Ford Fiesta</option>
-                    <option value="3">Mini Cooper</option>
-                </select>
-                <div id="export-link" class="left hidden"><a href="/maps"><img src='img/link.png'></a></div>
-                <div id="gpxExportButton" class="hidden"><a href=""><img alt="gpx" src='img/gpx.png'></a></div>
-                <div id="hosting">Powered by <a href='https://graphhopper.com/#directions-api'>GraphHopper API</a></div>
-            </div>
-            <div class="clear"> </div>
-            <ul class="tab">
-              <li><a href="javascript:void(0)" class="tablinks" onclick="">Economica</a></li>
-              <li><a href="javascript:void(0)" class="tablinks" onclick="openCity(event, 'London')">Rapida</a></li>
-              <li><a href="javascript:void(0)" class="tablinks" onclick="openCity(event, 'Paris')">Corta</a></li>
-            </ul>
-            <div id="info" class="small_text">
-
-            </div>
-            <div id="error" class="error">
-            </div>
-
-            <div id="footer">
-                <p>done by Andrea Cattaneo - 2017</p>
-                <div id="link_line" class="hidden">
-                    <form id="donate_form" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-                        <input type="hidden" name="cmd" value="_s-xclick"/>
-                        <input type="hidden" name="hosted_button_id" value="P9JQECJKH46JN"/>
-                        <input id="donate_form_button" class="footer-link" type="submit" name="submit" value="Donate"/>
-                    </form>
-                    <a class="footer-link" href='https://graphhopper.com/#contact'>Imprint</a>
-                    <a class="footer-link" href='https://graphhopper.com/terms.html'>Terms</a>
-                    <a class="footer-link" href='https://graphhopper.com/privacy.html'>Privacy</a>
-                </div>
-            </div>
-
-            <div id="pointTemplate" class="hidden">
-                <div id="{id}_Div" class="pointDiv">
-                    <img id="{id}_Indicator" class="hidden pointIndicator" src="img/loading.gif"/>
-                    <img id="{id}_Flag" class="pointFlag" src="img/marker-small-green.png"/>
-                    <input id="{id}_Input" class="pointInput" type="text" placeholder=""/>
-                    <div class="pointDelete"><img src="./img/point_delete.png"></div>
-                    <div class="clear"> </div>
-                    <div id="{id}_ResolveFound" class="pointResolveFound"></div>
-                    <div id="{id}_ResolveError" class="pointResolveError"></div>
-                </div>
-            </div>
+      <div id="options">
+        <select name="carId" id="carId">
+        </select>
+        <span id="vehicles" class="hidden">
+        </span>
+      </div>
+      <form id="locationform">
+        <div id="locationpoints">
+          <div id="x_pointAdd" class="pointAdd"><img src="./img/point_add.png"/></div>
         </div>
-        <div id="gpx_dialog" title="Included GPX data:">
-            <form id="GPXOptions" name="GPXOptions">
-                <label class="inline">
-                    <input type="checkbox" id="gpx_route" name="GPXOptions" value="route">Route</label>
-                <br>
-                <label class="inline">
-                    <input type="checkbox" id="gpx_track" name="GPXOptions" value="track" checked="checked">Track</label>
-                <br>
-                <label class="inline">
-                    <input type="checkbox" id="gpx_waypoints" name="GPXOptions" value="waypoints">Waypoints</label>
-                <br>
-            </form>
+        <input id="searchButton" type="submit" value="Search" class="hidden">
+        <div class="clear"> </div>
+      </form>
+
+      <div id="export-link" class="left hidden"><a href="/maps"><img src='img/link.png'></a></div>
+      <div id="gpxExportButton" class="hidden"><a href=""><img alt="gpx" src='img/gpx.png'></a></div>
+      <div id="hosting">Powered by <a href='https://graphhopper.com/#directions-api'>GraphHopper API</a></div>
+    </div>
+    <div class="clear"> </div>
+    <ul class="tab">
+      <li><a href="javascript:void(0)" class="tablinks submit-button" data-weighting="fuel_optimizer">Economica</a></li>
+      <li><a href="javascript:void(0)" class="tablinks submit-button" data-weighting="fastest">Rapida</a></li>
+      <li><a href="javascript:void(0)" class="tablinks submit-button" data-weighting="shortest">Corta</a></li>
+    </ul>
+    <div id="info" class="small_text">
+
+    </div>
+    <div id="error" class="error">
+    </div>
+
+    <div id="footer">
+      <div id="link_line" class="hidden">
+        <form id="donate_form" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+          <input type="hidden" name="cmd" value="_s-xclick"/>
+          <input type="hidden" name="hosted_button_id" value="P9JQECJKH46JN"/>
+          <input id="donate_form_button" class="footer-link" type="submit" name="submit" value="Donate"/>
+        </form>
+        <a class="footer-link" href='https://graphhopper.com/#contact'>Imprint</a>
+        <a class="footer-link" href='https://graphhopper.com/terms.html'>Terms</a>
+        <a class="footer-link" href='https://graphhopper.com/privacy.html'>Privacy</a>
+      </div>
+    </div>
+
+    <div id="pointTemplate" class="hidden">
+      <div id="{id}_Div" class="pointDiv">
+        <img id="{id}_Indicator" class="hidden pointIndicator" src="img/loading.gif"/>
+        <img id="{id}_Flag" class="pointFlag" src="img/marker-small-green.png"/>
+        <input id="{id}_Input" class="pointInput" type="text" placeholder=""/>
+        <div class="pointDelete"><img src="./img/point_delete.png"></div>
+        <div class="clear"> </div>
+        <div id="{id}_ResolveFound" class="pointResolveFound"></div>
+        <div id="{id}_ResolveError" class="pointResolveError"></div>
+      </div>
+    </div>
+  </div>
+  <div id="gpx_dialog" title="Included GPX data:">
+    <form id="GPXOptions" name="GPXOptions">
+      <label class="inline">
+        <input type="checkbox" id="gpx_route" name="GPXOptions" value="route">Route</label>
+        <br>
+        <label class="inline">
+          <input type="checkbox" id="gpx_track" name="GPXOptions" value="track" checked="checked">Track</label>
+          <br>
+          <label class="inline">
+            <input type="checkbox" id="gpx_waypoints" name="GPXOptions" value="waypoints">Waypoints</label>
+            <br>
+          </form>
         </div>
         <div id="map">
         </div>
         <!-- Piwik -->
         <script type="text/javascript">
-            $(document).ready(() => {
-              $('.select2').select2();
-            });
-            PIWIK = false;
-            if (PIWIK) {
-                var _paq = _paq || [];
-                _paq.push(['trackPageView']);
-                _paq.push(['enableLinkTracking']);
-                (function () {
-                    var url = "https://graphhopper.com/piwik/";
-                    _paq.push(['setTrackerUrl', url + 'piwik.php']);
-                    _paq.push(['setSiteId', 1]);
-                    var d = document, g = d.createElement('script'), s = d.getElementsByTagName('script')[0];
-                    g.type = 'text/javascript';
-                    g.defer = true;
-                    g.async = true;
-                    g.src = url + 'piwik.js';
-                    s.parentNode.insertBefore(g, s);
-                })();
-            }
+        $(document).ready(() => {
+          var selectCars = $('#carId');
+          $.getJSON( "cars", function( data ) {
+            $.when( $.each( data, function( key, val ) {
+              selectCars.append($('<option>', {
+                  value: val.id,
+                  text: val.text
+              }));
+            }) ).then(() => selectCars.select2());
+          });
+        });
+        PIWIK = false;
+        if (PIWIK) {
+          var _paq = _paq || [];
+          _paq.push(['trackPageView']);
+          _paq.push(['enableLinkTracking']);
+          (function () {
+            var url = "https://graphhopper.com/piwik/";
+            _paq.push(['setTrackerUrl', url + 'piwik.php']);
+            _paq.push(['setSiteId', 1]);
+            var d = document, g = d.createElement('script'), s = d.getElementsByTagName('script')[0];
+            g.type = 'text/javascript';
+            g.defer = true;
+            g.async = true;
+            g.src = url + 'piwik.js';
+            s.parentNode.insertBefore(g, s);
+          })();
+        }
         </script>
         <noscript><p><img src="https://graphhopper.com/piwik/piwik.php?idsite=1" style="border:0;" alt="" /></p></noscript>
         <!-- End Piwik Code -->
-    </body>
-</html>
+      </body>
+      </html>

@@ -67,5 +67,8 @@ public class GHServletModule extends ServletModule {
 
         serve("/nearest*").with(NearestServlet.class);
         bind(NearestServlet.class).in(Singleton.class);
+        
+        serve("/cars*").with(GetCarsServlet.class);
+        bind(GetCarsServlet.class).in(Singleton.class);
     }
 }

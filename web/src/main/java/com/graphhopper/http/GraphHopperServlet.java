@@ -149,6 +149,65 @@ public class GraphHopperServlet extends GHBaseServlet {
             logger.error(logStr + ", errors:" + ghRsp.getErrors());
         } else {
             PathWrapper altRsp0 = ghRsp.getBest();
+            GHResponse ghRsp1 = new GHResponse();
+            
+            requestPoints = new ArrayList<>(altRsp0.getPoints().size());
+            for (int i = 0; i < altRsp0.getPoints().size(); i++) {
+            	requestPoints.add(altRsp0.getPoints().toGHPoint(i));
+            }
+            
+            try {
+                List<Double> favoredHeadings = Collections.EMPTY_LIST;
+                try {
+                    favoredHeadings = getDoubleParamList(httpReq, "heading");
+
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException("heading list in from format: " + e.getMessage());
+                }
+
+                if (!hopper.getEncodingManager().supports(vehicleStr)) {
+                    throw new IllegalArgumentException("Vehicle not supported: " + vehicleStr);
+                } else if (enableElevation && !hopper.hasElevation()) {
+                    throw new IllegalArgumentException("Elevation not supported!");
+                } else if (favoredHeadings.size() > 1 && favoredHeadings.size() != requestPoints.size()) {
+                    throw new IllegalArgumentException("The number of 'heading' parameters must be <= 1 "
+                            + "or equal to the number of points (" + requestPoints.size() + ")");
+                }
+
+                FlagEncoder algoVehicle = hopper.getEncodingManager().getEncoder(vehicleStr);
+                GHRequest request;
+                if (favoredHeadings.size() > 0) {
+                    // if only one favored heading is specified take as start heading
+                    if (favoredHeadings.size() == 1) {
+                        List<Double> paddedHeadings = new ArrayList<Double>(Collections.nCopies(requestPoints.size(),
+                                Double.NaN));
+                        paddedHeadings.set(0, favoredHeadings.get(0));
+                        request = new GHRequest(requestPoints, paddedHeadings);
+                    } else {
+                        request = new GHRequest(requestPoints, favoredHeadings);
+                    }
+                } else {
+                    request = new GHRequest(requestPoints);
+                }
+
+                initHints(request, httpReq.getParameterMap());
+                request.setVehicle(algoVehicle.toString()).
+                        setWeighting("fuel_optimizer").
+                        setAlgorithm(algoStr).
+                        setLocale(localeStr).
+                        getHints().
+                        put("calcPoints", calcPoints).
+                        put("instructions", enableInstructions).
+                        put("wayPointMaxDistance", minPathPrecision).
+                        put("carId", carId);
+
+                ghRsp1 = hopper.route(request);
+            } catch (IllegalArgumentException ex) {
+                ghRsp1.addError(ex);
+            }
+            
+            altRsp0.setRouteWeight(ghRsp1.getBest().getRouteWeight());
+            
             logger.info(logStr + ", alternatives: " + alternatives
                     + ", distance0: " + altRsp0.getDistance()
                     + ", time0: " + Math.round(altRsp0.getTime() / 60000f) + "min"

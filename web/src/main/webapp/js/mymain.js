@@ -21045,7 +21045,7 @@
             this.api_params = {
                 locale: "en",
                 vehicle: "car",
-                weighting: "fastest",
+                weighting: "fuel_optimizer",
                 elevation: !1
             },
             this.route.addListener("route.add", function(t) {
@@ -26980,7 +26980,7 @@
                             C.append(w),
                             I.append(C),
                             e.hasElevation() && I.append(translate.createEleInfoString(f.ascend, f.descend, e.useMiles)),
-                            I.append("<p>Consumo di carburante previsto:" + f.weight +" L</p>"),
+                            I.append("<p>Consumo previsto:" + f.weight.toFixed(6) + " L</p>"),
                             b.append(I),
                             f.instructions) {
                                 var M = require("./instructions.js");
@@ -27004,7 +27004,9 @@
                     }
                 })
             }
-            function mySubmit() {
+            function mySubmit(weighting, carId) {
+                ghRequest.api_params.weighting = weighting;
+                ghRequest.api_params.carId = carId;
                 var e, t, o, r = [], a = !0, n = $("#locationpoints > div.pointDiv > input.pointInput"), s = n.size;
                 return $.each(n, function(n) {
                     0 === n ? (e = $(this).val(),
@@ -27060,9 +27062,11 @@
                     initFromParams(e.data, !0)
                 }),
                 $("#locationform").submit(function(e) {
-                    e.preventDefault(),
-                    mySubmit()
+                    e.preventDefault()
                 });
+                $('.submit-button').click((e) => {
+                  mySubmit($(e.target).data('weighting'), $('#carId').val());
+                })
                 var o = urlTools.parseUrlWithHisto();
                 $.when(ghRequest.fetchTranslationMap(o.locale), ghRequest.getInfo()).then(function(e, t) {
                     function r(e, t) {
