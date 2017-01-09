@@ -26980,7 +26980,7 @@
                             C.append(w),
                             I.append(C),
                             e.hasElevation() && I.append(translate.createEleInfoString(f.ascend, f.descend, e.useMiles)),
-                            I.append("<p>Consumo previsto:" + f.weight.toFixed(6) + " L</p>"),
+                            I.append("<p>Consumo previsto: " + f.weight.toFixed(6) + " L</p>"),
                             b.append(I),
                             f.instructions) {
                                 var M = require("./instructions.js");
