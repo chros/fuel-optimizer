@@ -150,7 +150,21 @@
               }));
             }) ).then(() => selectCars.select2());
           });
+
+          setTimeout(() => {
+            $('.leaflet-control-layers-base  input')[1].click();
+          }, 1500);
         });
+
+
+
+
+
+
+
+
+
+
         PIWIK = false;
         if (PIWIK) {
           var _paq = _paq || [];
